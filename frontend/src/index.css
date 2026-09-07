@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+    --color-azure-500: #243642;
+    --color-honeydew-500: #e2f1e7;
+}

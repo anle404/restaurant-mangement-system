@@ -1,0 +1,53 @@
+# ==============================
+# Environment variables
+# ==============================
+.env
+.env.local
+
+# ==============================
+# Common / OS / Editor
+# ==============================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.log
+
+# ==============================
+# Frontend
+# ==============================
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.eslintcache
+
+# ==============================
+# Backend
+# ==============================
+backend/__pycache__/
+backend/routers/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/.venv/
+backend/venv/
+backend/env/
+backend/.env
+backend/*.egg-info/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/instance/
+backend/*.sqlite3
+backend/*.db
+
+db_init
+restaurant.sql
