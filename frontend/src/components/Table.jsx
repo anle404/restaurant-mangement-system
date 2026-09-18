@@ -1,6 +1,6 @@
 import tableUnoccupied from "../assets/table-unoccupied.svg"
 import tableOccupied from "../assets/table-occupied.svg"
-import { Box, Typography } from "@mui/material"
+import { Box, Tab, Typography } from "@mui/material"
 import TableTimer from "./TableTimer"
 import { useNavigate } from "react-router"
 
@@ -49,7 +49,13 @@ export default function Table({table}) {
                         }}>
                             {table.total} $
                         </Typography>
-                        <TableTimer startTime={Date.parse(table.opened_at)} />
+                        <Typography sx={{
+                            fontWeight: 'medium',
+                            fontSize: '1em',
+                            lineHeight: 1
+                        }}>
+                            <TableTimer startTime={Date.parse(table.opened_at)} />
+                        </Typography>
                     </Box>
                 )}
             </Box>

@@ -22,12 +22,6 @@ export default function TableTimer({startTime}) {
     };
 
     return (
-        <Typography sx={{
-            fontWeight: 'medium',
-            fontSize: '1em',
-            lineHeight: 1
-        }}>
-            {formatDuration(elapsed)}
-        </Typography>
+        formatDuration(elapsed)
     )
 }

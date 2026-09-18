@@ -1,3 +1,4 @@
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8000';
@@ -20,9 +21,9 @@ export const getTables = async () => {
     }
 }
 
-export const getTableOrder = async (table_id) => {
+export const getTableOrder = async (tableId) => {
     try {
-        const response = await axiosInstance.get(`/tables/${table_id}/order`)
+        const response = await axiosInstance.get(`/tables/${tableId}/order`)
         return response.data
     } catch (error) {
         console.error(`Error fetching table's order, table_id: ${table_id}`)
