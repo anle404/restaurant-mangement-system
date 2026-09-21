@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status, Response, HTTPException
 from datetime import datetime
 from pydantic import BaseModel
 from db import DatabaseConnector
@@ -17,7 +17,11 @@ class NewOrderInput(BaseModel):
     status: str = 'open',
     opened_at: datetime
 
-@router.post('/')
+class UpdateOrderInput(BaseModel):
+    quantity: int
+    note: str | None
+
+@router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_order(input: NewOrderInput) -> TableOrder:
     query = '''
         WITH new_order AS (
@@ -34,4 +38,42 @@ async def create_order(input: NewOrderInput) -> TableOrder:
             result = cursor.fetchone()
 
             return TableOrder(**result)
+
+@router.put('/{order_id}/order-items/{order_item_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def update_order(order_id: int, order_item_id: int, input: UpdateOrderInput) -> Response:
+    query = '''
+        UPDATE order_items SET 
+            quantity = %s,
+            note = %s
+        WHERE order_id = %s AND order_item_id = %s;
+    '''
+    
+    with DatabaseConnector.get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, (input.quantity, input.note, order_id, order_item_id))
+            updated_row = cursor.rowcount
+
+            if updated_row == 0:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order Item not found")
+
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.delete('/{order_id}/order-items/{order_item_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_order_item(order_id: int, order_item_id: int) -> Response:
+    query = '''
+        DELETE FROM order_items WHERE order_id = %s AND order_item_id = %s;
+    '''
+
+    with DatabaseConnector.get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, (order_id, order_item_id))
+            deleted_row = cursor.rowcount
+
+            if deleted_row == 0:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order Item not found")
+
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+
 

@@ -1,10 +1,24 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import { decrement, increment, removeItem } from "../redux/tableOrderSlice";
+import { decrement, deleteOrderItemThunk, increment, removeItem, syncQuantityThunk } from "../redux/tableOrderSlice";
 import { useDispatch } from "react-redux";
 import { memo } from "react";
+import { cancelPendingSync, scheduleQuantitySync } from "../utils/debouneSync";
 
 function OrderItemCard({index, item}) {
     const dispatch = useDispatch()
+
+    const handleQuantityChange = (changeFunction, orderId, orderItemId, data) => {
+        dispatch(changeFunction(orderItemId))
+        scheduleQuantitySync(dispatch, syncQuantityThunk, orderId, orderItemId, data)
+    }
+
+    const handleOrderItemRemove = async (orderId, orderItemId) => {
+        cancelPendingSync(orderItemId)
+        const result = await dispatch(deleteOrderItemThunk({ orderId, orderItemId }))
+        if (deleteOrderItemThunk.fulfilled.match(result)) {
+            dispatch(removeItem(orderItemId))
+        }
+    }
 
     return (
         <Box sx={{
@@ -50,9 +64,11 @@ function OrderItemCard({index, item}) {
                     color: '#243642'
                 }} onClick={() => {
                     if (item.quantity == 1) {
-                        dispatch(removeItem(item.order_item_id))
-                    } else
-                        dispatch(decrement(item.order_item_id))
+                        handleOrderItemRemove(item.order_id, item.order_item_id)
+                    } else {
+                        handleQuantityChange(decrement, item.order_id, item.order_item_id, { 
+                            quantity: item.quantity - 1, 
+                            note: item.note})}
                 }}>
                     <i className="ri-subtract-line" style={{fontSize: '1.8rem', lineHeight: 1}}></i>
                 </Button>
@@ -68,7 +84,9 @@ function OrderItemCard({index, item}) {
                     minWidth: 0,
                     bgcolor: '#243642',
                     color: 'white'
-                }} onClick={() => dispatch(increment(item.order_item_id))}>
+                }} onClick={() => handleQuantityChange(increment, item.order_id, item.order_item_id, {
+                    quantity: item.quantity + 1, 
+                    note: item.note})}>
                     <i className="ri-add-line" style={{fontSize: '1.8rem', lineHeight: 1}}></i>
                 </Button>
             </Box>

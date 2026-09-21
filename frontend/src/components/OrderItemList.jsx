@@ -6,7 +6,6 @@ import { useEffect } from "react";
 
 
 export default function OrderItemList() {
-
     const orderItems = useSelector(state => state.tableOrder.data.order_items)
 
     return (

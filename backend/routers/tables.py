@@ -78,7 +78,7 @@ async def get_open_order(table_id: int) -> TableOrder:
     query3: str = '''
         SELECT oi.*, mi.name FROM order_items AS oi
         INNER JOIN menu_items AS mi USING(menu_item_id)
-        WHERE order_id = 1;
+        WHERE order_id = %s;
     '''
     
 

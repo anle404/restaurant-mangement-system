@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import psycopg2
 from contextlib import contextmanager
+from fastapi import HTTPException
 
 
 def config(filename='.env', section='postgresql'):
@@ -36,8 +37,9 @@ class DatabaseConnector:
             yield conn
             conn.commit()
         except Exception as e:
-            print(e)
             conn.rollback()
+            raise e
+
         finally:
             conn.close()
 
