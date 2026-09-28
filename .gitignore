@@ -51,3 +51,4 @@ backend/*.db
 
 db_init
 restaurant.sql
+*.sh

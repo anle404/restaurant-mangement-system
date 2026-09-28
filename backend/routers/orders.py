@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Response, HTTPException
 from datetime import datetime
 from pydantic import BaseModel
 from db import DatabaseConnector
-from .tables import TableOrder
+from .tables import TableOrder, OrderItem
 from psycopg2.extras import RealDictCursor
 
 router = APIRouter(
@@ -14,12 +14,19 @@ class NewOrderInput(BaseModel):
     table_id: int
     staff_id: int
     type: str
-    status: str = 'open',
-    opened_at: datetime
+    status: str = 'open'
+    opened_at: datetime = datetime.now()
 
 class UpdateOrderInput(BaseModel):
     quantity: int
     note: str | None
+
+class NewOrderItemInput(BaseModel):
+    menu_item_id: int
+    status: str = 'Pending'
+    quantity: int = 1
+    created_at: datetime = datetime.now()
+    price: float
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_order(input: NewOrderInput) -> TableOrder:
@@ -74,6 +81,24 @@ async def delete_order_item(order_id: int, order_item_id: int) -> Response:
 
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
+@router.post('/{order_id}/order_items/', status_code=status.HTTP_201_CREATED)
+async def add_order_item(order_id: int, input: NewOrderItemInput):
+    query = '''
+        WITH new_order_item AS (
+            INSERT INTO order_items(order_id, menu_item_id, status, quantity, created_at, price) 
+            VALUES(%s, %s, %s, %s, %s, %s)
+            RETURNING *
+        ) 
+        SELECT new_order_item.*, mi.name FROM new_order_item 
+        INNER JOIN menu_items AS mi 
+        USING(menu_item_id);
+    '''
 
+    with DatabaseConnector.get_connection() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(query, (order_id, input.menu_item_id, input.status, input.quantity, input.created_at, input.price))
+            result = cursor.fetchone()
 
+            return OrderItem(**result)
+            
 

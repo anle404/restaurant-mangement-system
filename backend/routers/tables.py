@@ -25,6 +25,7 @@ class OrderItem(BaseModel):
     quantity: int
     note: str | None
     created_at: datetime
+    price: float
 
 class TableOrder(BaseModel):
     order_id: int | None = None

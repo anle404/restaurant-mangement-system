@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getTableOrder } from "../services/tables";
-import { deleteOrderItem, updateOrderItem } from "../services/orders";
+import { addOrderItem, deleteOrderItem, updateOrderItem } from "../services/orders";
 
 export const tableOrderThunk = createAsyncThunk(
     'table/getOrder',
@@ -9,6 +9,17 @@ export const tableOrderThunk = createAsyncThunk(
             return await getTableOrder(tableId);
         } catch (error) {
             return rejectWithValue(error.message);
+        }
+    }
+)
+
+export const addOrderItemThunk = createAsyncThunk(
+    'order/addOrderItem',
+    async ({orderId, data}, {rejectWithValue}) => {
+        try {
+            return await addOrderItem(orderId, data)
+        } catch(error) {
+            return rejectWithValue(error.message)
         }
     }
 )
@@ -47,6 +58,9 @@ const tableOrderSlice = createSlice({
     name: 'tableOrder',
     initialState,
     reducers: {
+        setTable: (state, action) => {
+            state.data = action.payload
+        },
         increment: (state, action) => {
             const item = state.data.order_items.find(i => i.order_item_id == action.payload) 
             if (item) {
@@ -61,6 +75,9 @@ const tableOrderSlice = createSlice({
         },
         removeItem: (state, action) => {
             state.data.order_items = state.data.order_items.filter(i => i.order_item_id != action.payload)
+        },
+        addItem: (state, action) => {
+            state.data.order_items.push(action.payload)
         }
     },
     extraReducers: builder => {
@@ -97,5 +114,5 @@ const tableOrderSlice = createSlice({
     }
 })
 
-export const {setOrderItems, increment, decrement, removeItem} = tableOrderSlice.actions
+export const {setOrderItems, increment, decrement, removeItem, addItem, setTable} = tableOrderSlice.actions
 export default tableOrderSlice.reducer

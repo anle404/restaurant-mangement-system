@@ -14,7 +14,8 @@ export default function Table({table}) {
             display: 'flex',
             justifyContent: 'center',
             position: 'relative',
-            color: table.order_id ? 'white' : 'black'
+            color: table.order_id ? 'white' : 'black',
+            cursor: 'pointer'
         }} onClick={() => navigate(`./${table.table_id}`)}>
             <img src={table.order_id ? tableOccupied : tableUnoccupied} className="rotate-90" width="100%" height="100%" />
             <Box sx={{

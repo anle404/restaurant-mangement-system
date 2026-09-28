@@ -4,9 +4,11 @@ import OrderItemList from "./OrderItemList.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { tableOrderThunk } from "../redux/tableOrderSlice.js";
 import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 
 export default function OrderDetail({tableId}) {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(tableOrderThunk(tableId))
@@ -19,26 +21,24 @@ export default function OrderDetail({tableId}) {
         <Box sx={{
             width: '100%',
             height: '100%',
-            padding: '4%'
+            paddingX: '4%'
         }}>
-            {(tableInfo) && (
-                <Box sx={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'space-between'
+            <Box sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between'
+            }}>
+                <i className="ri-arrow-left-line cursor-pointer" style={{
+                    fontSize: '2.5rem',
+                    lineHeight: 1
+                }} onClick={() => navigate('..')}></i>
+                <Typography sx={{
+                    fontWeight: 'bold',
+                    fontSize: '2rem'
                 }}>
-                    <i className="ri-arrow-left-line" style={{
-                        fontSize: '2.5rem',
-                        lineHeight: 1
-                    }}></i>
-                    <Typography sx={{
-                        fontWeight: 'bold',
-                        fontSize: '2rem'
-                    }}>
-                        Table {tableInfo.label}
-                    </Typography>
-                </Box>
-            )}
+                    Table {tableInfo ? tableInfo.label : ''}
+                </Typography>
+            </Box>
             
             <Box sx={{
                 width: '100%',

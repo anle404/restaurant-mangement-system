@@ -5,6 +5,7 @@ import OrderDetail from "../components/OrderDetail";
 import tableOrderReducer from '../redux/tableOrderSlice.js'
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
+import Menu from "../components/Menu.jsx";
 
 
 export default function OrderPage() {
@@ -20,19 +21,21 @@ export default function OrderPage() {
     return (
         <Box sx={{
             display: 'flex',
-            height: '100vh'
+            height: '100vh',
+            paddingTop: '1%',
+            boxSizing: 'border-box'
         }}>
             <Provider store={store}>
                 <Box sx={{
                     flex: '1',
                     minHeight: '100%',
-                    overflowY: 'scroll'
+                    overflowY: 'hidden'
                 }}>
-                    Hi
+                    <Menu />
                 </Box>
                 <Box sx={{
                     width: '35%',
-                    minHeight: '100vh',
+                    minHeight: '100%',
                     height:'fit-content',
                     borderLeft: '3px solid red'
                 }}>

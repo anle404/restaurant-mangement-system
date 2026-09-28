@@ -9,6 +9,7 @@ class MenuItem(BaseModel):
     name: str
     price: float
     created_at: datetime
+    url: str
 
 router = APIRouter(
     prefix="/menu",
@@ -16,10 +17,10 @@ router = APIRouter(
 )
 
 @router.get("/")
-async def get_menu():
+async def get_menu() -> list[MenuItem]:
     response: list[MenuItem] = []
     query: str = '''
-        SELECT * FROM menu_items;
+        SELECT * FROM menu_items ORDER BY menu_item_id;
     '''
     with DatabaseConnector.get_connection() as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
