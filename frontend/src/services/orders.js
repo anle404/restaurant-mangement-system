@@ -11,7 +11,6 @@ const axiosInstance = axios.create({
 })
 
 export const createOrder = async (table_id, staff_id, type) => {
-    console.log(table_id, staff_id, type)
     try {
         const response = await axiosInstance.post(`/orders`, {
             table_id: table_id,

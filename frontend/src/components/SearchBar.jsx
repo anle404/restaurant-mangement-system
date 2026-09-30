@@ -2,7 +2,7 @@ import { Box, InputBase } from "@mui/material";
 import { useRef } from "react";
 
 
-export default function SearchBar({sx}) {
+export default function SearchBar({sx, query}) {
     const inputRef = useRef(null);
 
     return (

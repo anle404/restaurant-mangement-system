@@ -1,5 +1,5 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
-import { decrement, deleteOrderItemThunk, increment, removeItem, syncQuantityThunk } from "../redux/tableOrderSlice";
+import { Box, Button, Typography } from "@mui/material";
+import { decrement, deleteOrderItemThunk, increment, syncQuantityThunk } from "../redux/tableOrderSlice";
 import { useDispatch } from "react-redux";
 import { memo } from "react";
 import { cancelPendingSync, scheduleQuantitySync } from "../utils/debouneSync";
@@ -12,12 +12,9 @@ function OrderItemCard({index, item}) {
         scheduleQuantitySync(dispatch, syncQuantityThunk, orderId, orderItemId, data)
     }
 
-    const handleOrderItemRemove = async (orderId, orderItemId) => {
+    const handleOrderItemRemove = (orderId, orderItemId) => {
         cancelPendingSync(orderItemId)
-        const result = await dispatch(deleteOrderItemThunk({ orderId, orderItemId }))
-        if (deleteOrderItemThunk.fulfilled.match(result)) {
-            dispatch(removeItem(orderItemId))
-        }
+        dispatch(deleteOrderItemThunk({ orderId, orderItemId }))
     }
 
     return (

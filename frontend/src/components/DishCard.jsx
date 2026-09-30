@@ -1,7 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, addOrderItemThunk, increment, setTable, syncQuantityThunk } from "../redux/tableOrderSlice";
-import { createOrder } from "../services/orders";
+import { addItem, addOrderItemThunk, createOrderThunk, increment, setTable, syncQuantityThunk } from "../redux/tableOrderSlice";
 import { scheduleQuantitySync } from "../utils/debouneSync";
 
 
@@ -10,11 +9,12 @@ export default function DishCard({sx, menuItem}) {
     const tableInfo = useSelector(state => state.tableOrder.data)
 
     const handleAddOrderItem = async (orderId, data) => {
-        let result;
-
         if (!orderId) {
-            result = await createOrder(tableInfo.table_id, 1, 'Dine In')
-            dispatch(setTable(result))
+            const result = await dispatch(createOrderThunk({
+                table_id: tableInfo.table_id,
+                staff_id: 1,
+                type: 'Dine In'
+            })).unwrap()
             orderId = result.order_id
         }
         
@@ -26,10 +26,7 @@ export default function DishCard({sx, menuItem}) {
                 note: item.note
             })
         } else {
-            result = await dispatch(addOrderItemThunk({ orderId, data }))
-            if (addOrderItemThunk.fulfilled.match(result)) {
-                dispatch(addItem(result.payload))
-            }
+            dispatch(addOrderItemThunk({ orderId, data }))
         }
         
     }

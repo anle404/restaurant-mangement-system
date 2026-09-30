@@ -22,7 +22,7 @@ export default function OrderItemList() {
             display: 'none',
             },
         }}>
-            {orderItems.map((item, index) => (
+            {orderItems?.map((item, index) => (
                 <OrderItemCard key={item.order_item_id} index={index} item={item} />
             ))}          
         </Box>

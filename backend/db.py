@@ -1,7 +1,6 @@
 from configparser import ConfigParser
 import psycopg2
 from contextlib import contextmanager
-from fastapi import HTTPException
 
 
 def config(filename='.env', section='postgresql'):

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getTableOrder } from "../services/tables";
-import { addOrderItem, deleteOrderItem, updateOrderItem } from "../services/orders";
+import { addOrderItem, createOrder, deleteOrderItem, updateOrderItem } from "../services/orders";
 
 export const tableOrderThunk = createAsyncThunk(
     'table/getOrder',
@@ -11,6 +11,17 @@ export const tableOrderThunk = createAsyncThunk(
             return rejectWithValue(error.message);
         }
     }
+)
+
+export const createOrderThunk = createAsyncThunk(
+    'order/createOrder',
+    async ({table_id, staff_id, type}, { rejectWithValue }) => {
+        try {
+            return await createOrder(table_id, staff_id, type)
+        } catch (error) {
+            return rejectWithValue(error.message)
+        }
+    } 
 )
 
 export const addOrderItemThunk = createAsyncThunk(
@@ -58,9 +69,6 @@ const tableOrderSlice = createSlice({
     name: 'tableOrder',
     initialState,
     reducers: {
-        setTable: (state, action) => {
-            state.data = action.payload
-        },
         increment: (state, action) => {
             const item = state.data.order_items.find(i => i.order_item_id == action.payload) 
             if (item) {
@@ -70,21 +78,12 @@ const tableOrderSlice = createSlice({
         decrement: (state, action) => {
             const item = state.data.order_items.find(i => i.order_item_id == action.payload) 
             if (item) {
-                item.quantity -= 1
+                item.quantity -= 1  
             }
         },
-        removeItem: (state, action) => {
-            state.data.order_items = state.data.order_items.filter(i => i.order_item_id != action.payload)
-        },
-        addItem: (state, action) => {
-            state.data.order_items.push(action.payload)
-        }
     },
     extraReducers: builder => {
         builder
-            .addCase(tableOrderThunk.pending, (state) => {
-                state.status = 'pending'
-            })
             .addCase(tableOrderThunk.fulfilled, (state, action) => {
                 state.status = 'fulfilled'
                 state.data = {
@@ -99,6 +98,7 @@ const tableOrderSlice = createSlice({
                 state.status = 'rejected'
                 state.error = action.error.message ?? 'Unknown Error'
             })
+
             .addCase(syncQuantityThunk.fulfilled, (state, action) => {
                 const item = state.data.order_items.find(i => i.order_item_id == action.meta.arg.orderItemId)
                 if (item) {
@@ -110,6 +110,27 @@ const tableOrderSlice = createSlice({
                 if (item) {
                     item.quantity = item.last_synced_quantity
                 }
+            })
+
+            .addCase(deleteOrderItemThunk.fulfilled, (state, action) => {
+                state.data.order_items = state.data.order_items.filter(i => i.order_item_id != action.meta.arg.orderItemId)
+            })
+            .addCase(deleteOrderItemThunk.rejected, (state, action) => {
+                state.error = action.error.message ?? 'Unknown Error'
+            })
+
+            .addCase(addOrderItemThunk.fulfilled, (state, action) => {
+                state.data.order_items.push(action.payload)
+            })
+            .addCase(addOrderItemThunk.rejected, (state, action) => {
+                state.error = action.error.message ?? 'Unknown Error'
+            })
+
+            .addCase(createOrderThunk.fulfilled, (state, action) => {
+                state.data = action.payload
+            })
+            .addCase(createOrderThunk.rejected, (state,action) => {
+                state.error = action.error.message ?? 'Unknown Error'
             })
     }
 })
